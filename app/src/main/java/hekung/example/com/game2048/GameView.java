@@ -1,6 +1,8 @@
 package hekung.example.com.game2048;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.util.AttributeSet;
@@ -44,6 +46,24 @@ public class GameView extends GridLayout {
 
 
     }
+    private void checkComplete(){
+        for (int y=0;y<4;y++){
+            for (int x=0;x<4;x++){
+                if (cardsMap[x][y].getNum()==0||(x>0&&cardsMap[x][y].equals(cardsMap[x-1][y]))||
+                        (x<3&&cardsMap[x][y].equals(cardsMap[x+1][y]))||
+                        (y>0&&cardsMap[x][y].equals(cardsMap[x][y-1]))||
+                        (y<3&&cardsMap[x][y].equals(cardsMap[x][y+1]))){
+                    return;
+                }
+            }
+        }
+        new AlertDialog.Builder(getContext()).setTitle("提示").setMessage("游戏结束").setPositiveButton("重新开始", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                startGame();
+            }
+        }).show();
+    }
     private void addRandomNum(){
         emptyPoints.clear();
         for (int y=0;y<4;y++){
@@ -55,6 +75,7 @@ public class GameView extends GridLayout {
         }
         Point point = emptyPoints.remove((int)(Math.random()*emptyPoints.size()));
         cardsMap[point.x][point.y].setNum(Math.random()>0.1?2:4);
+        checkComplete();
     }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
